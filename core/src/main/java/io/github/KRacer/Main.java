@@ -9,12 +9,14 @@ import com.badlogic.gdx.graphics.Color;
 
 public class Main implements ApplicationListener {
 
+    Texture backgroundTexture;
     Texture motor1Texture;
     SpriteBatch spriteBatch;
     FitViewport viewport;
 
     @Override
     public void create() {
+        backgroundTexture = new Texture("bg1.png");
         motor1Texture = new Texture("motor1.png");
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(12.8f, 10.8f);
@@ -45,7 +47,14 @@ public class Main implements ApplicationListener {
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
-        spriteBatch.draw(motor1Texture, 0, 0, 1, 2);
+
+        // store the worldWidth and worldHeight as local variables for brevity
+        float worldWidth = viewport.getWorldWidth();
+        float worldHeight = viewport.getWorldHeight();
+
+        spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight); // draw the background
+        spriteBatch.draw(motor1Texture, 6, 5, 1, 2); // draw the bucket
+
         spriteBatch.end();
     }
 
