@@ -5,14 +5,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Main implements ApplicationListener {
+//========================
+    TextureAtlas motorAtlas;
+    Animation<Sprite> turnRightAnimation;
+    Animation<Sprite> turnLeftAnimation;
+    float animationTime = 0f;
+//    ====================
+
 
     Texture backgroundTexture;
     Texture motor1Texture;
@@ -30,6 +39,20 @@ public class Main implements ApplicationListener {
 
     @Override
     public void create() {
+
+        // Initialize motorAtlas (make sure "motor.atlas" exists in your assets folder)
+        motorAtlas = new TextureAtlas(Gdx.files.internal("motorMovement.atlas"));
+
+        // Create animations (assuming frames 4 & 5 are for turning right, 2 & 1 for turning left)
+        turnRightAnimation = new Animation<>(0.05f, motorAtlas.createSprite("4"), motorAtlas.createSprite("5"));
+        turnLeftAnimation = new Animation<>(0.05f, motorAtlas.createSprite("2"), motorAtlas.createSprite("1"));
+        turnRightAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+        turnLeftAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+
+        // Set the initial sprite
+        motor1Sprite = motorAtlas.createSprite("3"); // Assuming "3" is the idle frame
+
+
         backgroundTexture = new Texture("bg1.png");
         motor1Texture = new Texture("motor1.png");
         car1Texture = new Texture("car1.png");
@@ -63,18 +86,25 @@ public class Main implements ApplicationListener {
         float moveX = 0f;
         float moveY = 0f;
 
-        // Check for key presses
+        // Determine movement direction
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             moveX += 1;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            animationTime += delta; // Increment animation time
+            motor1Sprite.setRegion(turnRightAnimation.getKeyFrame(animationTime)); // Use right-turn animation
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             moveX -= 1;
+            animationTime += delta;
+            motor1Sprite.setRegion(turnLeftAnimation.getKeyFrame(animationTime)); // Use left-turn animation
+        } else {
+            animationTime = 0f; // Reset animation time when no input
+            motor1Sprite.setRegion(motorAtlas.findRegion("3")); // Idle frame
         }
+
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             moveY += 1;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            moveY -= 0.7f;
+            moveY -= 1;
         }
 
         // Scale speed if moving diagonally
@@ -179,6 +209,10 @@ public class Main implements ApplicationListener {
 
     @Override
     public void dispose() {
+
+        // Destroy application's resources here.
+        motorAtlas.dispose();
+
         motor1Texture.dispose();
         spriteBatch.dispose();
     }
