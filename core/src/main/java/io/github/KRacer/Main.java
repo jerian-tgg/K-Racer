@@ -19,6 +19,9 @@ public class Main implements ApplicationListener {
 
     Sprite motor1Sprite;
 
+    float bg1Y = 0;
+    float bg1Speed = 2f;
+
     @Override
     public void create() {
         backgroundTexture = new Texture("bg1.png");
@@ -43,18 +46,35 @@ public class Main implements ApplicationListener {
 
     private void input() {
         // Handle input logic here
-        float speed = 4f;
+        float speed = 4f; // Speed of the bike
         float delta = Gdx.graphics.getDeltaTime();
 
+        // Initialize movement variables
+        float moveX = 0f;
+        float moveY = 0f;
+
+        // Check for key presses
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            motor1Sprite.translateX(speed * delta);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            motor1Sprite.translateX(-speed * delta);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            motor1Sprite.translateY(speed * delta);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            motor1Sprite.translateY(-speed * delta);
+            moveX += 1;
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            moveX -= 1;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            moveY += 1;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            moveY -= 0.7f;
+        }
+
+        // Scale speed if moving diagonally
+        if (moveX != 0 && moveY != 0) {
+            speed *= 0.7f;
+        }
+
+        // Apply movement
+        motor1Sprite.translateX(moveX * speed * delta);
+        motor1Sprite.translateY(moveY * speed * delta);
 
         // Prevent sprite from going out of bounds
         float worldWidth = viewport.getWorldWidth();
@@ -74,6 +94,11 @@ public class Main implements ApplicationListener {
 
     private void logic() {
         // Handle game logic here
+        bg1Y -= bg1Speed * Gdx.graphics.getDeltaTime();
+        if (bg1Y <= -viewport.getWorldHeight()) {
+            bg1Y += viewport.getWorldHeight(); // Reset the position for looping
+        }
+
     }
 
     private void draw() {
@@ -82,12 +107,14 @@ public class Main implements ApplicationListener {
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
 
-        // store the worldWidth and worldHeight as local variables for brevity
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
 
-        spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight); // draw the background
-        motor1Sprite.draw(spriteBatch); // Sprites have their own draw method
+        // Draw the background twice to create a looping effect
+        spriteBatch.draw(backgroundTexture, 0, bg1Y, worldWidth, worldHeight);
+        spriteBatch.draw(backgroundTexture, 0, bg1Y + worldHeight, worldWidth, worldHeight);
+
+        motor1Sprite.draw(spriteBatch); // Draw the sprite on top of the background
 
         spriteBatch.end();
     }
