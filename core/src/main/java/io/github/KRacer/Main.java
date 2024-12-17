@@ -10,37 +10,53 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Main implements ApplicationListener {
 //========================
-    TextureAtlas motorAtlas;
+TextureAtlas motorAtlas;
     Animation<Sprite> turnRightAnimation;
     Animation<Sprite> turnLeftAnimation;
     float animationTime = 0f;
-//    ====================
 
-
-    Texture backgroundTexture;
+    Texture roadTexture;
     Texture motor1Texture;
     Texture car1Texture;
+    Texture car2Texture;
+    Texture tryc1Texture;
+    Texture bus1Texture;
+
     SpriteBatch spriteBatch;
     FitViewport viewport;
 
     Sprite motor1Sprite;
 
-    float bg1Y = 0;
-    float bg1Speed = 2f;
+    Array<Sprite> carSprites;
+    Array<Float> carFallingSpeeds;
 
-    Array<Sprite> car1Sprites;
-    float car1Timer;
+    // New arrays for spawn timers for each lane
+    float[] laneTimers;
+
+    // 3.75 minimum ; lower than that cause car collision
+    float laneSpawnDelay = 3.75f;  // delay between car spawns in a lane (in seconds) increase = less car spawn; decrease = more car spawn
+
+    boolean collisionDetected = false; // flagged to indicate collision
+
+    float roadSpeed = 4; //road scrolling speed
+    float roadY1;  // first road position
+    float roadY2;  // second road position
+
+
+
+
+
 
     @Override
     public void create() {
 
-        // Initialize motorAtlas (make sure "motor.atlas" exists in your assets folder)
         motorAtlas = new TextureAtlas(Gdx.files.internal("motorMovement.atlas"));
 
         // Create animations (assuming frames 4 & 5 are for turning right, 2 & 1 for turning left)
@@ -53,21 +69,37 @@ public class Main implements ApplicationListener {
         motor1Sprite = motorAtlas.createSprite("3"); // Assuming "3" is the idle frame
 
 
-        backgroundTexture = new Texture("bg1.png");
+        roadTexture = new Texture("road.png");
         motor1Texture = new Texture("motor1.png");
         car1Texture = new Texture("car1.png");
+        car2Texture = new Texture("car2.png");
+        tryc1Texture = new Texture("tryc1.png");
+        bus1Texture = new Texture("bus1.png");
+
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(12.8f, 10.8f);
-        motor1Sprite = new Sprite(motor1Texture); // Initialize the sprite based on the texture
-        motor1Sprite.setSize(1, 2); // Define the size of the sprite
-        car1Sprites = new Array<>();
 
-        createCar1();
+//        motor1Sprite = new Sprite(motor1Texture);
+        motor1Sprite.setSize(1,2);
+
+        //initialize road position
+        roadY1 = 0; // sets the 1st road initial position to the bottom
+        roadY2 = viewport.getWorldHeight(); //sets the 2nd road initial position to the bottom
+
+        carSprites = new Array<>();
+        carFallingSpeeds = new Array<>();
+
+        laneTimers = new float[4];
+        for (int i = 0; i < laneTimers.length; i++) {
+            laneTimers[i] = MathUtils.random(0f, laneSpawnDelay);
+        }
+//        createCars();
+
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        viewport.update(width,height, true);
     }
 
     @Override
@@ -75,14 +107,13 @@ public class Main implements ApplicationListener {
         input();
         logic();
         draw();
+
     }
 
-    private void input() {
-        // Handle input logic here
-        float speed = 4f; // Speed of the bike
-        float delta = Gdx.graphics.getDeltaTime();
+    private void input () {
 
-        // Initialize movement variables
+        float speed = 4f;
+        float delta = Gdx.graphics.getDeltaTime();
         float moveX = 0f;
         float moveY = 0f;
 
@@ -107,113 +138,218 @@ public class Main implements ApplicationListener {
             moveY -= 1;
         }
 
-        // Scale speed if moving diagonally
+        //reduces speed if move diagonally
         if (moveX != 0 && moveY != 0) {
             speed *= 0.7f;
         }
 
-        // Apply movement
+        //translates the movement, speed and delta value
         motor1Sprite.translateX(moveX * speed * delta);
         motor1Sprite.translateY(moveY * speed * delta);
 
-        // Prevent sprite from going out of bounds
+
+    }
+
+    private void logic () {
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
 
-        float spriteX = motor1Sprite.getX();
-        float spriteY = motor1Sprite.getY();
+        float motor1Width = motor1Sprite.getWidth();
+        float motor1Height = motor1Sprite.getHeight();
 
-        if (spriteX < 0) motor1Sprite.setX(0);
-        if (spriteX + motor1Sprite.getWidth() > worldWidth)
-            motor1Sprite.setX(worldWidth - motor1Sprite.getWidth());
-
-        if (spriteY < 0) motor1Sprite.setY(0);
-        if (spriteY + motor1Sprite.getHeight() > worldHeight)
-            motor1Sprite.setY(worldHeight - motor1Sprite.getHeight());
-    }
-
-    private void logic() {
-        // Handle game logic here
-        bg1Y -= bg1Speed * Gdx.graphics.getDeltaTime();
-        if (bg1Y <= -viewport.getWorldHeight()) {
-            bg1Y += viewport.getWorldHeight(); // Reset the position for looping
-        }
+        //clamps player movement not to go overbound(clamp = limit)
+        motor1Sprite.setX(MathUtils.clamp(motor1Sprite.getX(),0,worldWidth - motor1Width));
+        motor1Sprite.setY(MathUtils.clamp(motor1Sprite.getY(),0,worldHeight - motor1Height));
 
         float delta = Gdx.graphics.getDeltaTime();
 
-        for (int i = car1Sprites.size - 1; i >= 0; i--) { // Handles car1 downward movement
-            Sprite car1Sprite = car1Sprites.get(i);
-            car1Sprite.translateY(-2f * delta); // Moves car1 downward
+        //collision detection function
+        if (!collisionDetected) {
+            roadUpdate(delta);
+            vehicleUpdate(delta);
+            vehicleSpawner();
 
-            if (car1Sprite.getY() < -car1Sprite.getHeight()) car1Sprites.removeIndex(i); // Removes car1 when off-screen
+
+
+            Rectangle motorHitbox = setMotorHitbox(); // initialized a Rectangle <variable> = <function = setMotorHitbox>
+            for (Sprite carSprite : carSprites) {
+                if (motorHitbox.overlaps(carSprite.getBoundingRectangle())) {
+                    collisionDetected = true;
+                    break;
+                }
+            }
+
+        } else {
+            for (Sprite carSprite : carSprites) {
+                carSprite.translateY(delta * roadSpeed);
+            }
         }
-
-        car1Timer += delta;
-        if (car1Timer > 2f) { // Spawns new car1 periodically
-            car1Timer = 0;
-            createCar1(); // Creates new car1 at random X position
-        }
-
     }
 
-    private void draw() {
+
+    private Rectangle setMotorHitbox() {
+        //  defined an adjustable hitbox for motor
+        float hitboxX = motor1Sprite.getX() + motor1Sprite.getWidth() * 0.20f; // Offset by 20% of the width
+        float hitboxY = motor1Sprite.getY() + motor1Sprite.getHeight() * 0.10f; // Offset by 10% of the height
+        float hitboxWidth = motor1Sprite.getWidth() * 0.60f; // Reduce width to 60%
+        float hitboxHeight = motor1Sprite.getHeight() * 0.80f; // Reduce height to 80%
+
+        return new Rectangle(hitboxX, hitboxY, hitboxWidth, hitboxHeight); //returns parameters value when calledc
+    }
+
+
+    private void roadUpdate(float delta) {
+
+//        float worldWidth = viewport.getWorldWidth();
+        float worldHeight = viewport.getWorldHeight();
+
+        //road scroll (movement downwards)
+        roadY1 -= roadSpeed * delta;
+        roadY2 -= roadSpeed * delta;
+
+        //resets position when it goes over the screen
+        if (roadY1 + worldHeight <= 0) {
+            roadY1 = roadY2 + worldHeight;
+        }
+        if (roadY2 + worldHeight <= 0) {
+            roadY2 = roadY1 + worldHeight;
+        }
+    }
+
+    private void vehicleUpdate(float delta) {
+        // updates car positions
+        for (int i = carSprites.size - 1; i >= 0; i--) { // car falling loop
+            Sprite carSprite = carSprites.get(i);
+            float carFallingSpeed = carFallingSpeeds.get(i);
+            carSprite.translateY(-carFallingSpeed * delta); // fallspeed = carFallingSpeed
+
+            if (carSprite.getY() + carSprite.getHeight() < 0) { // removes car if out of the window
+                carSprites.removeIndex(i); // removes the car from the array
+                carFallingSpeeds.removeIndex(i);
+            }
+        }
+    }
+
+    private void vehicleSpawner () {
+        // Increment the lane timers and check if it's time to spawn a car in each lane
+        for (int i = 0; i < laneTimers.length; i++) {
+            laneTimers[i] += Gdx.graphics.getDeltaTime();  // Increase timer for each lane
+
+            if (laneTimers[i] >= laneSpawnDelay) {
+                laneTimers[i] = 0f;  // Reset the timer
+                createCars(i);  // Spawn a car in the lane
+            }
+        }
+    }
+
+    private void draw () {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+
+        // Loop start
         spriteBatch.begin();
 
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
 
-        // Draw the background twice to create a looping effect
-        spriteBatch.draw(backgroundTexture, 0, bg1Y, worldWidth, worldHeight);
-        spriteBatch.draw(backgroundTexture, 0, bg1Y + worldHeight, worldWidth, worldHeight);
 
-        motor1Sprite.draw(spriteBatch); // Draw the sprite on top of the background
+        //prints/draw road
+        spriteBatch.draw(roadTexture,0,roadY1,worldWidth,worldHeight);
+        spriteBatch.draw(roadTexture,0,roadY2,worldWidth,worldHeight);
 
-        for (Sprite car1Sprite : car1Sprites) {
-            car1Sprite.draw(spriteBatch);
+        //prints/draw motor sprite
+        motor1Sprite.draw(spriteBatch);
+
+        for (Sprite carSprite: carSprites ) {
+            carSprite.draw(spriteBatch);
         }
 
         spriteBatch.end();
+        //Loop end
     }
 
-    private void createCar1() {
-        float car1Width = 2;
-        float car1Height = 2;
+    private void createCars(int laneIndex) {
+        float carWidth; //car WIDTH with respect to FitViewport
+        float carHeight; //car HEIGHT with respect to FitViewport
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
 
-        // Divide the background into 4 equal parts
-        float sectionWidth = worldWidth / 4;
+        Sprite carSprite;
+        Texture carsTexture;
 
-        // Randomly select one of the 4 sections
-        int section = MathUtils.random(0, 3);
 
-        // Calculate the x-position of the car within the chosen section
-        float car1X = section * sectionWidth + (sectionWidth - car1Width) / 2; // Center in section
+        // here's where to add new vehicle (add 1 to the second parameter)
+        int carType = MathUtils.random(0, 3);
 
-        // Create and position the car
-        Sprite car1Sprite = new Sprite(car1Texture);
-        car1Sprite.setSize(car1Width, car1Height);
-        car1Sprite.setX(car1X); // Set to the calculated x-position
-        car1Sprite.setY(worldHeight); // Start from the top of the screen
-        car1Sprites.add(car1Sprite);
+        if (carType == 0) {
+            carsTexture = car1Texture;
+            carWidth = 2;
+            carHeight = 3;
+        } else if (carType == 1) {
+            carsTexture = car2Texture;
+            carWidth = 2;
+            carHeight = 3;
+        } else if (carType == 2) {
+            carsTexture = tryc1Texture;
+            carWidth = 1.71875f;
+            carHeight = 2;
+        } else {
+            carsTexture = bus1Texture;
+            carWidth = 2;
+            carHeight = 4;
+        }
+
+        carSprite = new Sprite(carsTexture);
+        carSprite.setSize(carWidth, carHeight);
+
+        //added adjustable lane division
+        float[] divisionStarts = {0.01f, worldWidth * 0.25f, worldWidth * 0.5f, worldWidth * 0.74f}; // You can adjust these positions
+        float divisionStart = divisionStarts[laneIndex];// Get the starting X position for the lane
+
+        carSprite.setX(divisionStart + MathUtils.random(0f, (worldWidth * 0.25f) - carWidth)); // random X within the division
+
+        // Set the car's Y position to spawn at the top of the screen
+        carSprite.setY(worldHeight); // Ensure the car spawns at the top of the screen, but within bounds
+
+        boolean overlapDetected = false;
+        for (Sprite existingCar : carSprites) {
+            if (Math.abs(existingCar.getX() - carSprite.getX()) < carWidth &&
+                Math.abs(existingCar.getY() - carSprite.getY()) < carHeight) {
+                overlapDetected = true;
+                break;  // exits the loop early if an overlap is detected
+            }
+        }
+
+        // If overlap detected, don't add the car
+        if (!overlapDetected) {
+            carSprites.add(carSprite);
+
+            float randomSpeed = MathUtils.random(1f, 1.5f); // assigns random speeds to new car (every index value creates a new car)
+            carFallingSpeeds.add(randomSpeed);
+        }
+    }
+
+
+
+    @Override
+    public void pause() {
+        // Invoked when your application is paused.
     }
 
     @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
+    public void resume() {
+        // Invoked when your application is resumed after pause.
+    }
 
     @Override
     public void dispose() {
-
         // Destroy application's resources here.
         motorAtlas.dispose();
 
+        roadTexture.dispose();
         motor1Texture.dispose();
         spriteBatch.dispose();
+        car1Texture.dispose();
     }
 }
