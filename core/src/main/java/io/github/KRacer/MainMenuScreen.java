@@ -127,6 +127,7 @@ public class MainMenuScreen implements Screen {
                 characterAtlasPlayer1.createSprite("back1"),
                 characterAtlasPlayer1.createSprite("back2"));
             turnUpAnimationPlayer1.setPlayMode(Animation.PlayMode.LOOP);
+            
 
             turnDownAnimationPlayer1 = new Animation<>(0.15f,
 <<<<<<< HEAD
