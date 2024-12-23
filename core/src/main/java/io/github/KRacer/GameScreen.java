@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
 package io.github.KRacer;
 
 import com.badlogic.gdx.Screen;
@@ -21,7 +25,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
 public class GameScreen implements Screen {
+<<<<<<< HEAD
     final io.github.KRacer.KRacer game;
+=======
+    final KRacer game;
+    final PowerUpValues powerUpValues;
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
 
     // Player 1 variables
     TextureAtlas motorAtlasPlayer1;
@@ -75,8 +84,15 @@ public class GameScreen implements Screen {
     private final Sound collisionSound;
     private final Music backgroundMusic;
 
+<<<<<<< HEAD
     public GameScreen(final io.github.KRacer.KRacer game) {
         this.game = game;
+=======
+    public GameScreen(KRacer game, PowerUpValues powerUpValues) {
+        this.game = game;
+        this.powerUpValues = powerUpValues;
+
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
 
         // Initialize animations for Player 1
         motorAtlasPlayer1 = new TextureAtlas(Gdx.files.internal("motorMovementPlayer1.atlas"));
@@ -204,12 +220,20 @@ public class GameScreen implements Screen {
                 float touchY = (Gdx.graphics.getHeight() - Gdx.input.getY()) * viewport.getWorldHeight() / Gdx.graphics.getHeight();
 
                 if (touchX > homeButX && touchX < homeButX + buttonWidth && touchY > homeButY && touchY < homeButY + buttonHeight) {
+<<<<<<< HEAD
                     game.setScreen(new io.github.KRacer.MainMenuScreen(game)); // Go to Main Menu
+=======
+                    game.setScreen(new MainMenuScreen(game, powerUpValues)); // Go to Main Menu
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
                     dispose();
                 }
 
                 if (touchX > resButX && touchX < resButX + buttonWidth && touchY > resButY && touchY < resButY + buttonHeight) {
+<<<<<<< HEAD
                     game.setScreen(new GameScreen(game)); // Restart the game
+=======
+                    game.setScreen(new GameScreen(game, powerUpValues)); // Restart the game
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
                     dispose();
                 }
             }
@@ -221,6 +245,7 @@ public class GameScreen implements Screen {
             return; // Block input if dimmed or a collision occurred
         }
 
+<<<<<<< HEAD
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
         float moveX1 = 0f, moveY1 = 0f;
@@ -237,10 +262,37 @@ public class GameScreen implements Screen {
             motor1Sprite.setRegion(turnLeftAnimationPlayer1.getKeyFrame(animationTimePlayer1));
         } else {
             animationTimePlayer1 = 0f;
+=======
+        float delta = Gdx.graphics.getDeltaTime();
+        float baseSpeed = 4f; // Base movement speed
+        float moveX1 = 0f, moveY1 = 0f;
+        float moveX2 = 0f, moveY2 = 0f;
+
+        float P1forward = powerUpValues.P1forward;
+        float P1backward = powerUpValues.P1backward;
+        float P1diagonal = powerUpValues.P1diagonal;
+
+        float P2forward = powerUpValues.P2forward;
+        float P2backward = powerUpValues.P2backward;
+        float P2diagonal = powerUpValues.P2diagonal;
+
+        // Player 1 controls
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            moveX1 += 1; // Move right
+            animationTimePlayer1 += delta;
+            motor1Sprite.setRegion(turnRightAnimationPlayer1.getKeyFrame(animationTimePlayer1));
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            moveX1 -= 1; // Move left
+            animationTimePlayer1 += delta;
+            motor1Sprite.setRegion(turnLeftAnimationPlayer1.getKeyFrame(animationTimePlayer1));
+        } else {
+            animationTimePlayer1 = 0f; // Reset animation when no turning
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             motor1Sprite.setRegion(motorAtlasPlayer1.findRegion("3")); // Idle frame for Player 1
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+<<<<<<< HEAD
             moveY1 += 0.8f;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
@@ -265,10 +317,30 @@ public class GameScreen implements Screen {
             motor2Sprite.setRegion(turnLeftAnimationPlayer2.getKeyFrame(animationTimePlayer2));
         } else {
             animationTimePlayer2 = 0f;
+=======
+            moveY1 += 1 * P1forward; // Apply Player 1 forward multiplier
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            moveY1 -= 1 * P1backward; // Apply Player 1 backward multiplier
+        }
+
+        // Player 2 controls
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            moveX2 += 1; // Move right
+            animationTimePlayer2 += delta;
+            motor2Sprite.setRegion(turnRightAnimationPlayer2.getKeyFrame(animationTimePlayer2));
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            moveX2 -= 1; // Move left
+            animationTimePlayer2 += delta;
+            motor2Sprite.setRegion(turnLeftAnimationPlayer2.getKeyFrame(animationTimePlayer2));
+        } else {
+            animationTimePlayer2 = 0f; // Reset animation when no turning
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             motor2Sprite.setRegion(motorAtlasPlayer2.findRegion("3")); // Idle frame for Player 2
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+<<<<<<< HEAD
             moveY2 += 0.8f;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -292,6 +364,38 @@ public class GameScreen implements Screen {
 
         motor2Sprite.translateX(moveX2 * adjustedSpeed2 * delta);
         motor2Sprite.translateY(moveY2 * adjustedSpeed2 * delta);
+=======
+            moveY2 += 1 * P2forward; // Apply Player 2 forward multiplier
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            moveY2 -= 1 * P2backward; // Apply Player 2 backward multiplier
+        }
+
+        // Normalize diagonal movement to avoid faster movement on diagonals
+        if (moveX1 != 0 && moveY1 != 0) {
+            moveX1 *= P1diagonal;
+            moveY1 *= P1diagonal;
+        }
+
+        if (moveX2 != 0 && moveY2 != 0) {
+            moveX2 *= P2diagonal;
+            moveY2 *= P2diagonal;
+        }
+
+        // Apply movement with base speed
+        motor1Sprite.translate(moveX1 * baseSpeed * delta, moveY1 * baseSpeed * delta);
+        motor2Sprite.translate(moveX2 * baseSpeed * delta, moveY2 * baseSpeed * delta);
+
+        // Clamp positions within viewport
+        float worldWidth = viewport.getWorldWidth();
+        float worldHeight = viewport.getWorldHeight();
+
+        motor1Sprite.setX(MathUtils.clamp(motor1Sprite.getX(), 0, worldWidth - motor1Sprite.getWidth()));
+        motor1Sprite.setY(MathUtils.clamp(motor1Sprite.getY(), 0, worldHeight - motor1Sprite.getHeight()));
+
+        motor2Sprite.setX(MathUtils.clamp(motor2Sprite.getX(), 0, worldWidth - motor2Sprite.getWidth()));
+        motor2Sprite.setY(MathUtils.clamp(motor2Sprite.getY(), 0, worldHeight - motor2Sprite.getHeight()));
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     }
 
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
 package io.github.KRacer;
 
 import com.badlogic.gdx.Gdx;
@@ -19,7 +23,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class MainMenuScreen implements Screen {
 
+<<<<<<< HEAD
     private final io.github.KRacer.KRacer game;
+=======
+
+    private final KRacer game;
+    private final PowerUpValues powerUpValues;
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
 
@@ -44,11 +54,34 @@ public class MainMenuScreen implements Screen {
 
     private Music backgroundMusic;
 
+<<<<<<< HEAD
 
     public MainMenuScreen(final io.github.KRacer.KRacer game) {
         this.game = game;
     }
 
+=======
+    // Power-up related variables
+    private Texture powerUp1Texture, powerUp2Texture, powerUp3Texture;
+    private Sprite powerUp1Sprite, powerUp2Sprite, powerUp3Sprite;
+    private boolean powerUp1Active = true;
+    private boolean powerUp2Active = true;
+    private boolean powerUp3Active = true;
+    private boolean player1CollectedPowerUp = false;
+    private boolean player2CollectedPowerUp = false;
+    float up1dia, up1back, up1for;
+    float up2dia, up2back, up2for;
+
+//    private float P1diagonal = 1f, P1backward = 1f, P1forward = 1f;
+//    private float P2diagonal = 1f, P2backward = 1f, P2forward = 1f;
+
+    public MainMenuScreen(KRacer game, PowerUpValues powerUpValues) {
+        this.game = game;
+        this.powerUpValues = powerUpValues;
+    }
+
+
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     @Override
     public void show() {
         viewport = new FitViewport(12.8f, 9.6f);
@@ -96,8 +129,13 @@ public class MainMenuScreen implements Screen {
             turnUpAnimationPlayer1.setPlayMode(Animation.PlayMode.LOOP);
 
             turnDownAnimationPlayer1 = new Animation<>(0.15f,
+<<<<<<< HEAD
                 characterAtlasPlayer2.createSprite("front1"),
                 characterAtlasPlayer2.createSprite("front2"));
+=======
+                characterAtlasPlayer1.createSprite("front1"),
+                characterAtlasPlayer1.createSprite("front2"));
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             turnDownAnimationPlayer1.setPlayMode(Animation.PlayMode.LOOP);
 
             turnRightAnimationPlayer2 = new Animation<>(0.15f,
@@ -136,6 +174,20 @@ public class MainMenuScreen implements Screen {
         homeBut = new Texture("homeBut.png");
         xBut = new Texture("xBut.png");
 
+<<<<<<< HEAD
+=======
+        // Power-ups (Textures and Sprites)
+        powerUp1Texture = new Texture("powerUpBrakes.png");
+        powerUp2Texture = new Texture("powerUpSpeed.png");
+        powerUp3Texture = new Texture("powerUpDiag.png");
+
+        powerUp1Sprite = new Sprite(powerUp1Texture);
+        powerUp2Sprite = new Sprite(powerUp2Texture);
+        powerUp3Sprite = new Sprite(powerUp3Texture);
+
+        spawnPowerUps();
+
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
         shapeRenderer = new ShapeRenderer();
     }
 
@@ -150,6 +202,10 @@ public class MainMenuScreen implements Screen {
         // Render the game only if not paused
         if (!isDimmed) {
             input(); // Process input
+<<<<<<< HEAD
+=======
+            checkPowerUpCollisions(); // Check for collisions with power-ups
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             checkGameStart(); // Handle game logic
 
             spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
@@ -159,14 +215,97 @@ public class MainMenuScreen implements Screen {
             spriteBatch.draw(backgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             motorcycleSprite.draw(spriteBatch);
             motorcycle2Sprite.draw(spriteBatch);
+<<<<<<< HEAD
             character1Sprite.draw(spriteBatch);
             character2Sprite.draw(spriteBatch);
 
 
+=======
+
+            if (powerUp1Active) powerUp1Sprite.draw(spriteBatch);
+            if (powerUp2Active) powerUp2Sprite.draw(spriteBatch);
+            if (powerUp3Active) powerUp3Sprite.draw(spriteBatch);
+
+            character1Sprite.draw(spriteBatch);
+            character2Sprite.draw(spriteBatch);
+
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             spriteBatch.end();
         }
     }
 
+<<<<<<< HEAD
+=======
+    private void spawnPowerUps() {
+        float minX = 2f, maxX = 11.3f;
+        float minY = 1f, maxY = 7.6f;
+
+        // Spawn each power-up at a random position within the clamped area
+        powerUp1Sprite.setPosition(MathUtils.random(minX, maxX), MathUtils.random(minY, maxY));
+        powerUp2Sprite.setPosition(MathUtils.random(minX, maxX), MathUtils.random(minY, maxY));
+        powerUp3Sprite.setPosition(MathUtils.random(minX, maxX), MathUtils.random(minY, maxY));
+
+        powerUp1Sprite.setSize(0.25f, 0.35f);
+        powerUp2Sprite.setSize(0.25f, 0.35f);
+        powerUp3Sprite.setSize(0.25f, 0.35f);
+    }
+
+
+
+    private void applyPowerUp(String powerUpType, int player) {
+        switch (powerUpType) {
+            case "speed":
+                if (player == 1) powerUpValues.P1forward += 1f;
+                if (player == 2) powerUpValues.P2forward += 1f;
+                break;
+            case "brake":
+                if (player == 1) powerUpValues.P1backward += 1f;
+                if (player == 2) powerUpValues.P2backward += 1f;
+                break;
+            case "diagonal":
+                if (player == 1) powerUpValues.P1diagonal += 0.7f;
+                if (player == 2) powerUpValues.P2diagonal += 0.7f;
+                break;
+        }
+    }
+
+
+
+
+    private void checkPowerUpCollisions() {
+        Rectangle char1Bounds = character1Sprite.getBoundingRectangle();
+        Rectangle char2Bounds = character2Sprite.getBoundingRectangle();
+
+        if (!player1CollectedPowerUp && powerUp1Active && char1Bounds.overlaps(powerUp1Sprite.getBoundingRectangle())) {
+            powerUp1Active = false;
+            player1CollectedPowerUp = true;
+            applyPowerUp("brake", 1);
+        } else if (!player1CollectedPowerUp && powerUp2Active && char1Bounds.overlaps(powerUp2Sprite.getBoundingRectangle())) {
+            powerUp2Active = false;
+            player1CollectedPowerUp = true;
+            applyPowerUp("speed", 1);
+        } else if (!player1CollectedPowerUp && powerUp3Active && char1Bounds.overlaps(powerUp3Sprite.getBoundingRectangle())) {
+            powerUp3Active = false;
+            player1CollectedPowerUp = true;
+            applyPowerUp("diagonal", 1);
+        }
+
+        if (!player2CollectedPowerUp && powerUp1Active && char2Bounds.overlaps(powerUp1Sprite.getBoundingRectangle())) {
+            powerUp1Active = false;
+            player2CollectedPowerUp = true;
+            applyPowerUp("brake", 2);
+        } else if (!player2CollectedPowerUp && powerUp2Active && char2Bounds.overlaps(powerUp2Sprite.getBoundingRectangle())) {
+            powerUp2Active = false;
+            player2CollectedPowerUp = true;
+            applyPowerUp("speed", 2);
+        } else if (!player2CollectedPowerUp && powerUp3Active && char2Bounds.overlaps(powerUp3Sprite.getBoundingRectangle())) {
+            powerUp3Active = false;
+            player2CollectedPowerUp = true;
+            applyPowerUp("diagonal", 2);
+        }
+    }
+
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     private void escMenu() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             isDimmed = !isDimmed;
@@ -191,9 +330,15 @@ public class MainMenuScreen implements Screen {
             }
 
             float buttonWidth = viewport.getWorldWidth() * 0.05f;
+<<<<<<< HEAD
             float buttonHeight = viewport.getWorldHeight() * 0.06f;
             float homeButX = 6.5f, homeButY = 3.2f;
             float xButX = 8.5f, xButY = 3.2f;
+=======
+            float buttonHeight = viewport.getWorldHeight() * 0.065f;
+            float homeButX = 5.4f, homeButY = 3.8f;
+            float xButX = 6.6f, xButY = 3.8f;
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
 
             spriteBatch.draw(homeBut, homeButX, homeButY, buttonWidth, buttonHeight);
             spriteBatch.draw(xBut, xButX, xButY, buttonWidth, buttonHeight);
@@ -206,7 +351,11 @@ public class MainMenuScreen implements Screen {
                 float touchY = (Gdx.graphics.getHeight() - Gdx.input.getY()) * viewport.getWorldHeight() / Gdx.graphics.getHeight();
 
                 if (touchX > homeButX && touchX < homeButX + buttonWidth && touchY > homeButY && touchY < homeButY + buttonHeight) {
+<<<<<<< HEAD
                     game.setScreen(new MainMenuScreen(game)); // Go to Main Menu
+=======
+                    game.setScreen(new MainMenuScreen(game, powerUpValues)); // Go to Main Menu
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
                     dispose();
                 }
 
@@ -299,11 +448,19 @@ public class MainMenuScreen implements Screen {
         character2Sprite.translateY(moveY2 * speed * delta);
 
         // Keep characters within screen bounds
+<<<<<<< HEAD
         character1Sprite.setX(MathUtils.clamp(character1Sprite.getX(), 0, viewport.getWorldWidth() - character1Sprite.getWidth()));
         character1Sprite.setY(MathUtils.clamp(character1Sprite.getY(), 0, viewport.getWorldHeight() - character1Sprite.getHeight()));
 
         character2Sprite.setX(MathUtils.clamp(character2Sprite.getX(), 0, viewport.getWorldWidth() - character2Sprite.getWidth()));
         character2Sprite.setY(MathUtils.clamp(character2Sprite.getY(), 0, viewport.getWorldHeight() - character2Sprite.getHeight()));
+=======
+        character1Sprite.setX(MathUtils.clamp(character1Sprite.getX(), 2, 11.3f - character1Sprite.getWidth()));
+        character1Sprite.setY(MathUtils.clamp(character1Sprite.getY(), 1, 7.6f - character1Sprite.getHeight()));
+
+        character2Sprite.setX(MathUtils.clamp(character2Sprite.getX(), 2, 11.3f - character2Sprite.getWidth()));
+        character2Sprite.setY(MathUtils.clamp(character2Sprite.getY(), 1, 7.6f - character2Sprite.getHeight()));
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     }
 
 
@@ -320,7 +477,11 @@ public class MainMenuScreen implements Screen {
 
         // Trigger game start
         if (gameStartTriggered) {
+<<<<<<< HEAD
             game.setScreen(new GameScreen(game));
+=======
+            game.setScreen(new GameScreen(game, powerUpValues));
+>>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             dispose();
         }
     }
