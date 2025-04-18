@@ -1,48 +1,21 @@
-package io.github.KRacer;
+package io.github.KamoteRacer;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-<<<<<<< HEAD
 
-
-public class KRacer extends Game {
-
-=======
-import io.github.KRacer.PowerUpValues;
 
 public class KRacer extends Game {
 
     // Instance of PowerUpValues to manage power-up effects
     public PowerUpValues powerUpValues;
 
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     public SpriteBatch batch;
     public BitmapFont font;
     public FitViewport viewport;
 
-<<<<<<< HEAD
-
-    public void create() {
-        batch = new SpriteBatch();
-        // use libGDX's default font
-        font = new BitmapFont();
-        viewport = new FitViewport(8, 5);
-
-        //font has 15pt, but we need to scale it to our viewport by ratio of viewport height to screen height
-        font.setUseIntegerPositions(false);
-        font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
-
-        this.setScreen(new MainMenuScreen(this));
-    }
-
-    public void render() {
-        super.render(); // important!
-    }
-
-=======
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -79,13 +52,8 @@ public class KRacer extends Game {
     }
 
     @Override
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     public void dispose() {
         batch.dispose();
         font.dispose();
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
 }

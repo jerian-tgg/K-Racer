@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
-package io.github.KRacer;
+package io.github.KamoteRacer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -23,13 +19,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class MainMenuScreen implements Screen {
 
-<<<<<<< HEAD
-    private final io.github.KRacer.KRacer game;
-=======
 
     private final KRacer game;
     private final PowerUpValues powerUpValues;
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
 
@@ -54,13 +46,6 @@ public class MainMenuScreen implements Screen {
 
     private Music backgroundMusic;
 
-<<<<<<< HEAD
-
-    public MainMenuScreen(final io.github.KRacer.KRacer game) {
-        this.game = game;
-    }
-
-=======
     // Power-up related variables
     private Texture powerUp1Texture, powerUp2Texture, powerUp3Texture;
     private Sprite powerUp1Sprite, powerUp2Sprite, powerUp3Sprite;
@@ -69,11 +54,9 @@ public class MainMenuScreen implements Screen {
     private boolean powerUp3Active = true;
     private boolean player1CollectedPowerUp = false;
     private boolean player2CollectedPowerUp = false;
-    float up1dia, up1back, up1for;
-    float up2dia, up2back, up2for;
 
-//    private float P1diagonal = 1f, P1backward = 1f, P1forward = 1f;
-//    private float P2diagonal = 1f, P2backward = 1f, P2forward = 1f;
+
+
 
     public MainMenuScreen(KRacer game, PowerUpValues powerUpValues) {
         this.game = game;
@@ -81,7 +64,6 @@ public class MainMenuScreen implements Screen {
     }
 
 
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     @Override
     public void show() {
         viewport = new FitViewport(12.8f, 9.6f);
@@ -95,7 +77,7 @@ public class MainMenuScreen implements Screen {
         // Load and configure the background music
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("menu_bg_music.mp3"));
         backgroundMusic.setLooping(true); // Loop the music
-        backgroundMusic.setVolume(0.5f); // Set volume (0.0 to 1.0)
+        backgroundMusic.setVolume(0.25f); // Set volume (0.0 to 1.0)
         backgroundMusic.play(); // Start playing the music
 
         // Initialize motorcycle sprite
@@ -127,16 +109,10 @@ public class MainMenuScreen implements Screen {
                 characterAtlasPlayer1.createSprite("back1"),
                 characterAtlasPlayer1.createSprite("back2"));
             turnUpAnimationPlayer1.setPlayMode(Animation.PlayMode.LOOP);
-            
 
             turnDownAnimationPlayer1 = new Animation<>(0.15f,
-<<<<<<< HEAD
-                characterAtlasPlayer2.createSprite("front1"),
-                characterAtlasPlayer2.createSprite("front2"));
-=======
                 characterAtlasPlayer1.createSprite("front1"),
                 characterAtlasPlayer1.createSprite("front2"));
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             turnDownAnimationPlayer1.setPlayMode(Animation.PlayMode.LOOP);
 
             turnRightAnimationPlayer2 = new Animation<>(0.15f,
@@ -175,8 +151,6 @@ public class MainMenuScreen implements Screen {
         homeBut = new Texture("homeBut.png");
         xBut = new Texture("xBut.png");
 
-<<<<<<< HEAD
-=======
         // Power-ups (Textures and Sprites)
         powerUp1Texture = new Texture("powerUpBrakes.png");
         powerUp2Texture = new Texture("powerUpSpeed.png");
@@ -188,7 +162,6 @@ public class MainMenuScreen implements Screen {
 
         spawnPowerUps();
 
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
         shapeRenderer = new ShapeRenderer();
     }
 
@@ -203,10 +176,7 @@ public class MainMenuScreen implements Screen {
         // Render the game only if not paused
         if (!isDimmed) {
             input(); // Process input
-<<<<<<< HEAD
-=======
             checkPowerUpCollisions(); // Check for collisions with power-ups
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             checkGameStart(); // Handle game logic
 
             spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
@@ -216,12 +186,6 @@ public class MainMenuScreen implements Screen {
             spriteBatch.draw(backgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             motorcycleSprite.draw(spriteBatch);
             motorcycle2Sprite.draw(spriteBatch);
-<<<<<<< HEAD
-            character1Sprite.draw(spriteBatch);
-            character2Sprite.draw(spriteBatch);
-
-
-=======
 
             if (powerUp1Active) powerUp1Sprite.draw(spriteBatch);
             if (powerUp2Active) powerUp2Sprite.draw(spriteBatch);
@@ -230,13 +194,10 @@ public class MainMenuScreen implements Screen {
             character1Sprite.draw(spriteBatch);
             character2Sprite.draw(spriteBatch);
 
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             spriteBatch.end();
         }
     }
 
-<<<<<<< HEAD
-=======
     private void spawnPowerUps() {
         float minX = 2f, maxX = 11.3f;
         float minY = 1f, maxY = 7.6f;
@@ -306,7 +267,6 @@ public class MainMenuScreen implements Screen {
         }
     }
 
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     private void escMenu() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             isDimmed = !isDimmed;
@@ -331,15 +291,9 @@ public class MainMenuScreen implements Screen {
             }
 
             float buttonWidth = viewport.getWorldWidth() * 0.05f;
-<<<<<<< HEAD
-            float buttonHeight = viewport.getWorldHeight() * 0.06f;
-            float homeButX = 6.5f, homeButY = 3.2f;
-            float xButX = 8.5f, xButY = 3.2f;
-=======
             float buttonHeight = viewport.getWorldHeight() * 0.065f;
             float homeButX = 5.4f, homeButY = 3.8f;
             float xButX = 6.6f, xButY = 3.8f;
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
 
             spriteBatch.draw(homeBut, homeButX, homeButY, buttonWidth, buttonHeight);
             spriteBatch.draw(xBut, xButX, xButY, buttonWidth, buttonHeight);
@@ -352,11 +306,7 @@ public class MainMenuScreen implements Screen {
                 float touchY = (Gdx.graphics.getHeight() - Gdx.input.getY()) * viewport.getWorldHeight() / Gdx.graphics.getHeight();
 
                 if (touchX > homeButX && touchX < homeButX + buttonWidth && touchY > homeButY && touchY < homeButY + buttonHeight) {
-<<<<<<< HEAD
-                    game.setScreen(new MainMenuScreen(game)); // Go to Main Menu
-=======
                     game.setScreen(new MainMenuScreen(game, powerUpValues)); // Go to Main Menu
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
                     dispose();
                 }
 
@@ -449,19 +399,11 @@ public class MainMenuScreen implements Screen {
         character2Sprite.translateY(moveY2 * speed * delta);
 
         // Keep characters within screen bounds
-<<<<<<< HEAD
-        character1Sprite.setX(MathUtils.clamp(character1Sprite.getX(), 0, viewport.getWorldWidth() - character1Sprite.getWidth()));
-        character1Sprite.setY(MathUtils.clamp(character1Sprite.getY(), 0, viewport.getWorldHeight() - character1Sprite.getHeight()));
-
-        character2Sprite.setX(MathUtils.clamp(character2Sprite.getX(), 0, viewport.getWorldWidth() - character2Sprite.getWidth()));
-        character2Sprite.setY(MathUtils.clamp(character2Sprite.getY(), 0, viewport.getWorldHeight() - character2Sprite.getHeight()));
-=======
         character1Sprite.setX(MathUtils.clamp(character1Sprite.getX(), 2, 11.3f - character1Sprite.getWidth()));
         character1Sprite.setY(MathUtils.clamp(character1Sprite.getY(), 1, 7.6f - character1Sprite.getHeight()));
 
         character2Sprite.setX(MathUtils.clamp(character2Sprite.getX(), 2, 11.3f - character2Sprite.getWidth()));
         character2Sprite.setY(MathUtils.clamp(character2Sprite.getY(), 1, 7.6f - character2Sprite.getHeight()));
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
     }
 
 
@@ -478,11 +420,7 @@ public class MainMenuScreen implements Screen {
 
         // Trigger game start
         if (gameStartTriggered) {
-<<<<<<< HEAD
-            game.setScreen(new GameScreen(game));
-=======
             game.setScreen(new GameScreen(game, powerUpValues));
->>>>>>> 4fdbe3e54f9a60d3da31c69bee6285b9c41c742d
             dispose();
         }
     }
@@ -514,3 +452,4 @@ public class MainMenuScreen implements Screen {
         backgroundMusic.dispose();
     }
 }
+

@@ -1,4 +1,4 @@
-package io.github.KRacer;
+package io.github.KamoteRacer;
 
 public class PowerUpValues {
     public float P1diagonal, P1backward, P1forward;
